@@ -207,7 +207,7 @@ export default function Services() {
       id="services"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
       viewport={{ once: true, margin: "-100px" }}
       className="py-20 md:py-28 bg-[#111118] relative overflow-hidden"
     >
@@ -229,10 +229,10 @@ export default function Services() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
         {/* Section Title */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
         >
           <SectionTitle
             subtitle="Layanan"
@@ -243,10 +243,10 @@ export default function Services() {
 
         {/* Category Tabs */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+          transition={{ duration: 0.3, ease: "easeOut", delay: 0.05 }}
           className="flex flex-wrap justify-center gap-2 md:gap-3 mb-12"
         >
           {categoryTabs.map((tab) => {
@@ -276,10 +276,10 @@ export default function Services() {
             return (
               <motion.div
                 key={service.title}
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 + i * 0.1 }}
+                transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 + i * 0.05 }}
                 className={`group glass-card rounded-2xl p-6 md:p-8 hover:border-accent/30 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] flex flex-col justify-between h-full ${
                   isGrowthPopular ? "border-accent/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]" : ""
                 }`}
