@@ -133,6 +133,26 @@ export default function About() {
             transition={{ duration: 0.6 }}
           >
             <div className="relative">
+              {/* Available Badge */}
+              <div
+                className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-xs font-semibold"
+                style={{
+                  background: "rgba(29,158,117,0.15)",
+                  border: "1px solid rgba(29,158,117,0.35)",
+                  borderRadius: "999px",
+                  color: "#1D9E75",
+                }}
+              >
+                <span
+                  className="w-2 h-2 rounded-full"
+                  style={{
+                    background: "#1D9E75",
+                    animation: "dotPulse 2s ease-in-out infinite",
+                  }}
+                />
+                Available for Work
+              </div>
+
               {/* Photo */}
               <div className="relative w-full aspect-[4/5] max-w-[400px] mb-6 mx-auto md:mx-0">
                 {activePhotoSection === "about" && (

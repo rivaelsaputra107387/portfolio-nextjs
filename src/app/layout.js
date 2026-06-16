@@ -1,6 +1,7 @@
 import { Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
 import FaviconLink from "@/components/layout/FaviconLink";
+import WhatsAppCTA from "@/components/layout/WhatsAppCTA";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -45,6 +46,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className="bg-background text-foreground antialiased font-sans">
         {children}
+        <WhatsAppCTA />
       </body>
     </html>
   );
