@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import SectionTitle from "@/components/ui/SectionTitle";
-import { Calendar, Users, Rocket, Building, Mail, Phone, MapPin, Download } from "lucide-react";
-import { motion } from "framer-motion";
+import { Mail, Phone, MapPin, Download } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import { usePhoto } from "@/components/providers/PhotoProvider";
+import { DotPattern } from "@/components/magicui/dot-pattern";
 
 const defaultProfile = {
   name: "Rivael Saputra",
@@ -21,13 +22,6 @@ Saya percaya solusi digital terbaik lahir dari kolaborasi: mendengarkan kebutuha
   linkedin_url: "https://linkedin.com/in/rivaelsaputra",
   instagram_url: "https://instagram.com/rievaelss"
 };
-
-const defaultStats = [
-  { icon: <Calendar className="w-6 h-6 text-accent mx-auto" />, value: "3+", label: "Tahun Pengalaman" },
-  { icon: <Users className="w-6 h-6 text-accent mx-auto" />, value: "5+", label: "Klien Puas" },
-  { icon: <Rocket className="w-6 h-6 text-accent mx-auto" />, value: "10+", label: "Proyek Selesai" },
-  { icon: <Building className="w-6 h-6 text-accent mx-auto" />, value: "3+", label: "Perusahaan/Organisasi" },
-];
 
 // Helper function to format phone number beautifully (+62 8XX-XXXX-XXXX)
 function formatPhoneNumber(num) {
@@ -56,10 +50,38 @@ function getWhatsAppLink(num) {
   return `https://wa.me/${cleanNum}`;
 }
 
+// Highlight keywords in bio
+function highlightBio(text) {
+  const keywords = ["3+ tahun", "tiga tahun", "live di production", "hasil nyata", "kolaborasi", "UMKM", "perusahaan"];
+  let result = text;
+  keywords.forEach((kw) => {
+    const regex = new RegExp(`(${kw})`, "gi");
+    result = result.replace(regex, `|||$1|||`);
+  });
+  const parts = result.split("|||");
+  return parts.map((part, i) => {
+    const isKeyword = keywords.some((kw) => kw.toLowerCase() === part.toLowerCase());
+    if (isKeyword) {
+      return (
+        <span key={i} style={{ color: "#9013FE", fontWeight: 600 }}>
+          {part}
+        </span>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 export default function About() {
   const [profile, setProfile] = useState(defaultProfile);
-  const [stats, setStats] = useState(defaultStats);
   const sectionRef = useRef(null);
+
+  const isAboutInView = useInView(sectionRef, { margin: "-40% 0px 0px 0px" });
+  const { activePhotoSection, setActivePhotoSection } = usePhoto();
+
+  useEffect(() => {
+    if (isAboutInView) setActivePhotoSection("about");
+  }, [isAboutInView, setActivePhotoSection]);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -75,234 +97,169 @@ export default function About() {
         console.error(err);
       }
     }
-
-    async function fetchStats() {
-      try {
-        const [projRes, clientRes] = await Promise.all([
-          fetch("/api/projects"),
-          fetch("/api/clients"),
-        ]);
-        const projects = projRes.ok ? await projRes.json() : [];
-        const clients = clientRes.ok ? await clientRes.json() : [];
-
-        setStats([
-          { icon: <Calendar className="w-6 h-6 text-accent mx-auto" />, value: "3+", label: "Tahun Pengalaman" },
-          { icon: <Users className="w-6 h-6 text-accent mx-auto" />, value: clients.length > 0 ? `${clients.length}+` : "5+", label: "Klien Puas" },
-          { icon: <Rocket className="w-6 h-6 text-accent mx-auto" />, value: projects.length > 0 ? `${projects.length}+` : "10+", label: "Proyek Selesai" },
-          { icon: <Building className="w-6 h-6 text-accent mx-auto" />, value: "3+", label: "Perusahaan/Organisasi" },
-        ]);
-      } catch (err) {
-        // Fallback
-      }
-    }
-
     fetchProfile();
-    fetchStats();
   }, []);
 
+  const techTags = ["Laravel", "Next.js", "React", "PHP", "MySQL", "PostgreSQL", "Tailwind CSS", "Git & GitHub"];
+
   return (
-    <motion.section
+    <section
       id="about"
       ref={sectionRef}
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      viewport={{ once: true, margin: "-100px" }}
-      className="py-20 md:py-28 relative bg-[#111118]"
+      className="relative py-24 md:py-32"
+      style={{ backgroundColor: "#0c0c18" }}
     >
-      <div className="absolute top-0 right-0 w-96 h-96 bg-accent/[0.03] rounded-full blur-[120px]" />
+      {/* Glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 400px 300px at 5% 10%, rgba(83,74,183,0.15) 0%, transparent 60%)",
+        }}
+      />
+      
+      {/* Animated Dot Pattern Background */}
+      <div className="absolute inset-0 z-0 opacity-40">
+        <DotPattern glow={true} width={20} height={20} cr={1.5} cx={1} cy={1} />
+      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <SectionTitle
-            subtitle="Tentang Saya"
-            title="Siapa RIVA?"
-            description="Kenali lebih dekat developer di balik setiap baris kode."
-          />
-        </motion.div>
-
-        <div className="grid lg:grid-cols-12 gap-12 items-stretch">
-          {/* Left — Identity Card with Photo & Contacts */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
+        <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-start">
+          {/* Left Column — Photo & Info */}
           <motion.div
-            className="lg:col-span-5 xl:col-span-4"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            <div className="relative h-full">
-              <div className="glass-card rounded-3xl border border-surface-border/60 relative group overflow-hidden h-full min-h-[480px] md:min-h-0">
-                {/* Glow effect */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-accent/[0.02] rounded-full blur-2xl group-hover:bg-accent/[0.05] transition-all duration-500 z-10" />
-
-                {/* --- DESKTOP VIEW LAYOUT (hidden md:block) --- */}
-                {/* Background Photo */}
-                <div className="absolute inset-0 w-full h-full hidden md:block z-0 overflow-hidden">
-                  <img
-                    src={profile.hero_image_url || "https://placehold.co/400x600/1A1A1A/8B5CF6?text=Rivael"}
-                    alt={profile.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  {/* Dark gradient overlay covering the bottom of the card */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent z-10" />
-                </div>
-
-                {/* Desktop Info Overlay (positioned absolutely at the bottom) */}
-                <div className="absolute bottom-0 inset-x-0 p-8 z-20 hidden md:block">
-                  <span className="inline-block text-xs font-extrabold uppercase tracking-widest text-accent mb-2 bg-accent/10 px-2.5 py-1 rounded">
-                    {profile.title}
-                  </span>
-                  <h3 className="text-2xl font-black text-white mb-4 tracking-tight">
-                    {profile.name}
-                  </h3>
-                  
-                  {/* Contact Links */}
-                  <div className="space-y-3.5 border-t border-white/10 pt-4">
-                    <a href={`mailto:${profile.email}`} className="flex items-center gap-3.5 text-sm text-muted-light hover:text-white transition-colors group/item">
-                      <Mail className="w-4 h-4 text-accent group-hover/item:scale-110 transition-transform" />
-                      <span className="font-semibold">{profile.email}</span>
-                    </a>
-                    <a
-                      href={getWhatsAppLink(profile.whatsapp)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3.5 text-sm text-muted-light hover:text-white transition-colors group/item"
-                    >
-                      <Phone className="w-4 h-4 text-accent group-hover/item:scale-110 transition-transform" />
-                      <span className="font-semibold">{formatPhoneNumber(profile.whatsapp)}</span>
-                    </a>
-                    <div className="flex items-center gap-3.5 text-sm text-muted-light">
-                      <MapPin className="w-4 h-4 text-accent" />
-                      <span className="font-semibold">{profile.location}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* --- MOBILE VIEW LAYOUT (block md:hidden) --- */}
-                <div className="md:hidden p-6 flex flex-col justify-between h-full relative z-20">
-                  {/* Compact top header with avatar circle and name/title side-by-side */}
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-accent/20 flex-shrink-0">
-                      <img
-                        src={profile.hero_image_url || "https://placehold.co/150x150/1A1A1A/8B5CF6?text=Rivael"}
-                        alt={profile.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-accent mb-1 bg-accent/10 px-2 py-0.5 rounded">
-                        {profile.title}
-                      </span>
-                      <h3 className="text-xl font-bold text-white tracking-tight">
-                        {profile.name}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Compact contact grid below */}
-                  <div className="space-y-3.5 border-t border-surface-border/50 pt-4">
-                    <a href={`mailto:${profile.email}`} className="flex items-center gap-3.5 p-3.5 bg-surface/50 border border-surface-border/30 rounded-xl hover:bg-surface/80 transition-all group/item">
-                      <Mail className="w-4 h-4 text-accent group-hover/item:scale-110 transition-transform" />
-                      <span className="font-medium truncate">{profile.email}</span>
-                    </a>
-                    <a
-                      href={getWhatsAppLink(profile.whatsapp)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3.5 p-3.5 bg-surface/50 border border-surface-border/30 rounded-xl hover:bg-surface/80 transition-all group/item"
-                    >
-                      <Phone className="w-4 h-4 text-accent group-hover/item:scale-110 transition-transform" />
-                      <span className="font-medium">{formatPhoneNumber(profile.whatsapp)}</span>
-                    </a>
-                    <div className="flex items-center gap-3.5 p-3.5 bg-surface/50 border border-surface-border/30 rounded-xl hover:bg-surface/80 transition-all">
-                      <MapPin className="w-4 h-4 text-accent" />
-                      <span className="font-medium">{profile.location}</span>
-                    </div>
-                  </div>
-                </div>
+            <div className="relative">
+              {/* Available Badge */}
+              <div
+                className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-xs font-semibold"
+                style={{
+                  background: "rgba(29,158,117,0.15)",
+                  border: "1px solid rgba(29,158,117,0.35)",
+                  borderRadius: "999px",
+                  color: "#1D9E75",
+                }}
+              >
+                <span
+                  className="w-2 h-2 rounded-full"
+                  style={{
+                    background: "#1D9E75",
+                    animation: "dotPulse 2s ease-in-out infinite",
+                  }}
+                />
+                Available for Work
               </div>
-              {/* Background decorative shadows */}
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 border-2 border-accent/15 rounded-3xl -z-10" />
-              <div className="absolute -top-4 -left-4 w-16 h-16 bg-accent/5 rounded-2xl -z-10" />
+
+              {/* Photo */}
+              <div className="relative w-full aspect-[4/5] max-w-[400px] mb-6">
+                {activePhotoSection === "about" && (
+                  <motion.img
+                    layoutId="shared-profile-photo"
+                    src={profile?.hero_image_url || "https://placehold.co/800x1000/0c0c18/9013FE?text=Foto+Profil"}
+                    alt={profile.name}
+                    className="w-full h-auto object-contain"
+                    style={{ filter: "drop-shadow(0 0 40px rgba(144, 19, 254, 0.4))" }}
+                    transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                  />
+                )}
+              </div>
+
+
             </div>
           </motion.div>
 
-          {/* Right — Bio paragraphs, tags, and CV download */}
+          {/* Right Column — Bio & Tech Stack */}
           <motion.div
-            className="lg:col-span-7 xl:col-span-8 lg:pl-4"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            <div className="glass-card rounded-3xl p-8 border border-surface-border/60 relative overflow-hidden h-full flex flex-col justify-between">
-              <div className="space-y-6">
-                {(profile.about_bio || "").split("\n").map((p, idx) => {
-                  if (!p.trim()) return null;
-                  return (
-                    <p key={idx} className="text-muted-light text-base md:text-lg leading-relaxed">
-                      {p}
-                    </p>
-                  );
-                })}
-              </div>
+            {/* Section Label */}
+            <span
+              className="inline-block text-xs font-semibold uppercase mb-4"
+              style={{
+                color: "#9013FE",
+                letterSpacing: "3px",
+              }}
+            >
+              ● TENTANG SAYA
+            </span>
 
-              <div className="mt-8 pt-8 border-t border-surface-border/50">
-                <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4 font-display">
-                  Core Technologies
-                </h4>
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {["Laravel", "Next.js", "React", "PHP", "MySQL", "PostgreSQL", "Tailwind CSS", "Git & GitHub"].map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-3.5 py-2 bg-surface border border-surface-border hover:border-accent/30 text-xs font-semibold text-muted-light rounded-xl hover:text-white transition-all cursor-default"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+            {/* Heading */}
+            <h2
+              className="font-display text-white mb-6"
+              style={{
+                fontSize: "clamp(1.75rem, 4vw, 2.75rem)",
+                fontWeight: 700,
+                lineHeight: 1.2,
+              }}
+            >
+              Siapa <span style={{ color: "#9013FE" }}>RIVA</span>?
+            </h2>
 
-                <a
-                  href={profile.cv_url && profile.cv_url !== "#" ? profile.cv_url : `https://wa.me/${profile.whatsapp}?text=Halo%20Riva,%20saya%20tertarik%20dengan%20CV%20Anda.`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 px-7 py-4 bg-accent hover:bg-accent-dark text-surface font-extrabold text-sm md:text-base rounded-xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:-translate-y-0.5"
-                >
-                  <Download className="w-5 h-5" />
-                  {profile.cv_url && profile.cv_url !== "#" ? "Download CV Saya" : "Request CV via WhatsApp"}
-                </a>
+            {/* Bio */}
+            <div className="space-y-4 mb-8">
+              {(profile.about_bio || "").split("\n").map((p, idx) => {
+                if (!p.trim()) return null;
+                return (
+                  <p
+                    key={idx}
+                    className="text-base leading-relaxed"
+                    style={{ color: "rgba(255,255,255,0.6)" }}
+                  >
+                    {highlightBio(p)}
+                  </p>
+                );
+              })}
+            </div>
+
+            {/* Contact Info Card (Moved here for balance) */}
+            <div
+              className="p-5 space-y-4"
+              style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid rgba(255,255,255,0.07)",
+                backdropFilter: "blur(10px)",
+                borderRadius: "12px",
+              }}
+            >
+              <a
+                href={`mailto:${profile.email}`}
+                className="flex items-center gap-3 text-sm transition-colors duration-300 group"
+                style={{ color: "rgba(255,255,255,0.6)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
+              >
+                <Mail className="w-4 h-4 flex-shrink-0" style={{ color: "#9013FE" }} />
+                <span className="font-medium">{profile.email}</span>
+              </a>
+              <a
+                href={getWhatsAppLink(profile.whatsapp)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-sm transition-colors duration-300"
+                style={{ color: "rgba(255,255,255,0.6)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
+              >
+                <Phone className="w-4 h-4 flex-shrink-0" style={{ color: "#9013FE" }} />
+                <span className="font-medium">{formatPhoneNumber(profile.whatsapp)}</span>
+              </a>
+              <div
+                className="flex items-center gap-3 text-sm"
+                style={{ color: "rgba(255,255,255,0.6)" }}
+              >
+                <MapPin className="w-4 h-4 flex-shrink-0" style={{ color: "#9013FE" }} />
+                <span className="font-medium">{profile.location}</span>
               </div>
             </div>
           </motion.div>
         </div>
-
-        {/* Stats Row */}
-        <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-16"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
-        >
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="glass-card rounded-2xl p-6 text-center hover:border-accent/30 transition-all duration-500 hover:-translate-y-1"
-            >
-              <div className="flex justify-center mb-2">{stat.icon}</div>
-              <div className="text-3xl md:text-4xl font-display font-extrabold text-accent mb-1">
-                {stat.value}
-              </div>
-              <div className="text-xs text-muted uppercase tracking-wider">{stat.label}</div>
-            </div>
-          ))}
-        </motion.div>
       </div>
-    </motion.section>
+    </section>
   );
 }

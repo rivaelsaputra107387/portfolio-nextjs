@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import SectionTitle from "@/components/ui/SectionTitle";
+import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { motion } from "framer-motion";
+import { Ripple } from "@/components/magicui/ripple";
+import { MagicCard } from "@/components/magicui/magic-card";
 
 // Helper function to format descriptions into intro and bullet points safely
 function parseDescription(desc) {
@@ -99,119 +100,257 @@ export default function Experience() {
   }, []);
 
   return (
-    <motion.section
+    <section
       id="experience"
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      viewport={{ once: true, margin: "-100px" }}
-      className="py-20 md:py-28 relative bg-[#111118]"
+      className="relative py-24 md:py-32 overflow-hidden"
+      style={{ backgroundColor: "#0e0a1a" }}
     >
-      <div className="absolute top-1/2 right-0 w-72 h-72 bg-accent/[0.03] rounded-full blur-[100px]" />
+      {/* Glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 400px 600px at 15% 50%, rgba(144, 19, 254,0.12) 0%, transparent 65%)",
+        }}
+      />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
+      {/* Ripple Background */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <Ripple mainCircleSize={300} numCircles={8} mainCircleOpacity={0.15} />
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 relative">
+        {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
         >
-          <SectionTitle
-            subtitle="Pengalaman"
-            title="Perjalanan Karir"
-            description="Timeline pengalaman profesional saya di dunia pengembangan web."
-          />
+          <span
+            className="inline-block text-xs font-semibold uppercase mb-4"
+            style={{ color: "#9013FE", letterSpacing: "3px" }}
+          >
+            ● PENGALAMAN
+          </span>
+          <h2
+            className="font-display text-white mb-4"
+            style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", fontWeight: 700 }}
+          >
+            Perjalanan Karir
+          </h2>
+          <p style={{ color: "rgba(255,255,255,0.5)" }} className="max-w-2xl mx-auto">
+            Timeline pengalaman profesional saya di dunia pengembangan web.
+          </p>
         </motion.div>
 
-        <div className="relative max-w-3xl mx-auto">
-          {/* Timeline Line */}
-          <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-accent via-accent/50 to-surface-border md:-translate-x-px" />
+        {/* Timeline */}
+        <div className="relative">
+          {/* Mobile Timeline Line */}
+          <div
+            className="absolute top-0 bottom-0 w-px md:hidden"
+            style={{
+              left: "24px",
+              background:
+                "linear-gradient(to bottom, transparent, rgba(144, 19, 254,0.7) 20%, rgba(144, 19, 254,0.7) 80%, transparent)",
+            }}
+          />
+          {/* Desktop: center line */}
+          <div
+            className="hidden md:block absolute top-0 bottom-0 left-1/2 w-px -translate-x-px"
+            style={{
+              background:
+                "linear-gradient(to bottom, transparent, rgba(144, 19, 254,0.7) 20%, rgba(144, 19, 254,0.7) 80%, transparent)",
+            }}
+          />
 
-          {experiences.map((exp, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 + i * 0.1 }}
-              className="relative mb-10 last:mb-0"
-            >
-              <div
-                className={`md:flex md:items-start md:gap-8 pl-14 md:pl-0 ${
-                  i % 2 === 0 ? "md:flex-row-reverse md:text-right" : ""
-                }`}
+          {experiences.map((exp, i) => {
+            const isEven = i % 2 === 0;
+            const { mainText, bullets } = parseDescription(exp.description);
+            const isExpanded = !!expandedItems[i];
+            const filteredTech = (exp.tech || []).filter(
+              (t) => t !== "N8N" && t !== "HuggingfaceAPI" && t !== "Hugging Face"
+            );
+
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: isEven ? -30 : 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                className="relative mb-12 last:mb-0"
               >
-                {/* Dot */}
-                <div className="absolute left-4 md:left-1/2 top-2 w-5 h-5 bg-surface border-[3px] border-accent rounded-full md:-translate-x-1/2 z-10 shadow-[0_0_10px_rgba(139,92,246,0.3)]" />
+                {/* Mobile Layout */}
+                <div className="md:hidden pl-14 relative">
+                  {/* Dot */}
+                  <div
+                    className="absolute left-3 top-2 w-3 h-3 rounded-full z-10"
+                    style={{
+                      background: "#9013FE",
+                      boxShadow:
+                        "0 0 0 4px rgba(144, 19, 254,0.2), 0 0 16px rgba(144, 19, 254,0.5)",
+                      animation: "timelineDotPulse 3s ease-in-out infinite",
+                    }}
+                  />
 
-                {/* Period label */}
-                <div className="md:w-1/2 mb-2 md:mb-0">
-                  <span className="inline-block px-3 py-1 bg-accent/10 text-accent text-xs font-semibold rounded-full">
-                    {exp.period}
-                  </span>
+                  {/* Card */}
+                  <MagicCard
+                    gradientColor="rgba(144, 19, 254, 0.15)"
+                    className="p-5"
+                  >
+                    {/* Date pill */}
+                    <span
+                      className="inline-block px-3 py-1 text-xs font-semibold mb-3"
+                      style={{
+                        background: "rgba(144, 19, 254,0.15)",
+                        color: "#9013FE",
+                        borderRadius: "999px",
+                      }}
+                    >
+                      {exp.period}
+                    </span>
+                    <h3 className="text-base font-bold text-white mb-1">
+                      {exp.role || exp.position}
+                    </h3>
+                    <p className="text-sm font-medium mb-3" style={{ color: "#9013FE" }}>
+                      {exp.company}
+                    </p>
+                    <p className="text-xs leading-relaxed mb-3" style={{ color: "rgba(255,255,255,0.5)" }}>
+                      {mainText}
+                    </p>
+
+                    {bullets.length > 0 && isExpanded && (
+                      <ul className="list-disc list-inside space-y-1 text-xs mb-3" style={{ color: "rgba(255,255,255,0.5)" }}>
+                        {bullets.map((b, idx) => (
+                          <li key={idx} className="leading-relaxed">{b}</li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {bullets.length > 0 && (
+                      <button
+                        onClick={() => toggleExpand(i)}
+                        suppressHydrationWarning
+                        className="inline-flex items-center gap-1 text-[11px] font-bold mb-3 transition-colors"
+                        style={{ color: "#9013FE" }}
+                      >
+                        {isExpanded ? (
+                          <>Sembunyikan <ChevronUp className="w-3.5 h-3.5" /></>
+                        ) : (
+                          <>Lihat Detail <ChevronDown className="w-3.5 h-3.5" /></>
+                        )}
+                      </button>
+                    )}
+
+                    <div className="flex flex-wrap gap-1.5">
+                      {filteredTech.map((t) => (
+                        <span
+                          key={t}
+                          className="text-[10px] px-2 py-0.5"
+                          style={{
+                            border: "1px solid rgba(255,255,255,0.1)",
+                            borderRadius: "6px",
+                            color: "rgba(255,255,255,0.5)",
+                          }}
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </MagicCard>
                 </div>
 
-                {/* Content Card */}
-                <div className="md:w-1/2">
-                  <div className="glass-card rounded-xl p-5 hover:border-accent/30 transition-all duration-300 hover:-translate-y-1 text-left">
-                    <h3 className="text-base font-bold text-white mb-1">{exp.role || exp.position}</h3>
-                    <p className="text-accent text-sm font-medium mb-3">{exp.company}</p>
-                    
-                    {(() => {
-                      const { mainText, bullets } = parseDescription(exp.description);
-                      const isExpanded = !!expandedItems[i];
-                      const filteredTech = (exp.tech || []).filter(
-                        (t) => t !== "N8N" && t !== "HuggingfaceAPI" && t !== "Hugging Face"
-                      );
+                {/* Desktop Layout — alternating */}
+                <div className={`hidden md:flex items-start gap-8 ${isEven ? "flex-row-reverse" : ""}`}>
+                  {/* Dot (centered) */}
+                  <div
+                    className="absolute left-1/2 top-2 w-3 h-3 rounded-full -translate-x-1/2 z-10"
+                    style={{
+                      background: "#9013FE",
+                      boxShadow:
+                        "0 0 0 4px rgba(144, 19, 254,0.2), 0 0 16px rgba(144, 19, 254,0.5)",
+                      animation: "timelineDotPulse 3s ease-in-out infinite",
+                    }}
+                  />
 
-                      return (
-                        <>
-                          <p className="text-muted-light text-xs md:text-sm leading-relaxed mb-3">
-                            {mainText}
-                          </p>
+                  {/* Date side */}
+                  <div className={`w-1/2 ${isEven ? "text-left pl-8" : "text-right pr-8"}`}>
+                    <span
+                      className="inline-block px-3 py-1 text-xs font-semibold"
+                      style={{
+                        background: "rgba(144, 19, 254,0.15)",
+                        color: "#9013FE",
+                        borderRadius: "999px",
+                      }}
+                    >
+                      {exp.period}
+                    </span>
+                  </div>
 
-                          {bullets.length > 0 && isExpanded && (
-                            <ul className="list-disc list-inside space-y-1 text-xs text-muted-light mb-3">
-                              {bullets.map((b, idx) => (
-                                <li key={idx} className="leading-relaxed">{b}</li>
-                              ))}
-                            </ul>
+                  {/* Card side */}
+                  <div className={`w-1/2 ${isEven ? "pr-8" : "pl-8"}`}>
+                    <MagicCard
+                      gradientColor="rgba(144, 19, 254, 0.15)"
+                      className="p-6"
+                    >
+                      <h3 className="text-base font-bold text-white mb-1">
+                        {exp.role || exp.position}
+                      </h3>
+                      <p className="text-sm font-medium mb-3" style={{ color: "#9013FE" }}>
+                        {exp.company}
+                      </p>
+                      <p className="text-sm leading-relaxed mb-3" style={{ color: "rgba(255,255,255,0.5)" }}>
+                        {mainText}
+                      </p>
+
+                      {bullets.length > 0 && isExpanded && (
+                        <ul className="list-disc list-inside space-y-1 text-xs mb-3" style={{ color: "rgba(255,255,255,0.5)" }}>
+                          {bullets.map((b, idx) => (
+                            <li key={idx} className="leading-relaxed">{b}</li>
+                          ))}
+                        </ul>
+                      )}
+
+                      {bullets.length > 0 && (
+                        <button
+                          onClick={() => toggleExpand(i)}
+                          suppressHydrationWarning
+                          className="inline-flex items-center gap-1 text-[11px] font-bold mb-3 transition-colors"
+                          style={{ color: "#9013FE" }}
+                        >
+                          {isExpanded ? (
+                            <>Sembunyikan <ChevronUp className="w-3.5 h-3.5" /></>
+                          ) : (
+                            <>Lihat Detail <ChevronDown className="w-3.5 h-3.5" /></>
                           )}
+                        </button>
+                      )}
 
-                          {bullets.length > 0 && (
-                            <button
-                              onClick={() => toggleExpand(i)}
-                              suppressHydrationWarning
-                              className="inline-flex items-center gap-1 text-[11px] text-accent hover:text-accent-light font-bold mb-3 transition-colors"
-                            >
-                              {isExpanded ? (
-                                <>Sembunyikan <ChevronUp className="w-3.5 h-3.5" /></>
-                              ) : (
-                                <>Lihat Detail <ChevronDown className="w-3.5 h-3.5" /></>
-                              )}
-                            </button>
-                          )}
-
-                          <div className="flex flex-wrap gap-1.5 mt-1">
-                            {filteredTech.map((t) => (
-                              <span
-                                key={t}
-                                className="text-[10px] px-2 py-0.5 bg-surface border border-surface-border text-muted-light rounded-md"
-                              >
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                        </>
-                      );
-                    })()}
+                      <div className="flex flex-wrap gap-1.5">
+                        {filteredTech.map((t) => (
+                          <span
+                            key={t}
+                            className="text-[10px] px-2 py-0.5"
+                            style={{
+                              border: "1px solid rgba(255,255,255,0.1)",
+                              borderRadius: "6px",
+                              color: "rgba(255,255,255,0.5)",
+                            }}
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </MagicCard>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }

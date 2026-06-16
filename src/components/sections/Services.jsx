@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { LayoutGrid, Globe, Building2, Settings, ShoppingCart, Send, Check, Clock, Rocket, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import { GridPattern } from "@/components/magicui/grid-pattern";
+import { BorderBeam } from "@/components/magicui/border-beam";
 
 // Helper function to map technical tiers to business-oriented labels
 function getTierLabel(tier) {
@@ -96,62 +98,62 @@ const fallbackServices = [
       "Sistem CRUD kustom + Database relasional",
       "Panel Admin Multi-Role (Akses Bertingkat)",
       "RESTful API dasar",
-      "Dokumentasi Teknis penggunaan sistem",
-      "Garansi / Support Teknis 14 hari",
+      "Hosting + Setup SSL penuh",
+      "3x Revisi",
     ],
     duration: "⏱ 14–21 hari kerja",
-    notes: null,
+    notes: "Tergantung tingkat kerumitan modul CRUD",
     tier: "Tier 2 — Growth (⭐ Most Popular)",
     category: "Web Sistem",
   },
   {
-    title: "Web Sistem Lanjut (Ultimate)",
-    icon: "👑",
-    price: "Mulai Rp 5.000.000",
-    description: "Toko online, portal berita, sistem booking, sistem informasi organisasi, dll.",
+    title: "Toko Online / E-Commerce (Growth)",
+    icon: "🛒",
+    price: "Rp 4.500.000 / proyek",
+    description: "Toko online mandiri, katalog produk, fashion, retail, dll.",
     features: [
-      "RBAC (Role-Based Access Control) & Workflow Kustom",
-      "Integrasi Layanan Eksternal (Pihak Ketiga)",
-      "Notifikasi Otomatis via Email / Webhook",
-      "Dashboard Laporan & Analytics Grafik",
-      "Garansi / Support Teknis 30 hari",
+      "Katalog Produk & Keranjang Belanja",
+      "Integrasi Payment Gateway (Midtrans/Xendit)",
+      "Perhitungan Ongkir Otomatis (RajaOngkir)",
+      "Panel Admin Manajemen Pesanan",
+      "SEO & Speed Optimization",
     ],
-    duration: "⏱ 21–45 hari kerja",
+    duration: "⏱ 14–21 hari kerja",
     notes: null,
-    tier: "Tier 3 — Ultimate",
+    tier: "Tier 2 — Growth (⭐ Most Popular)",
     category: "E-Commerce",
   },
   {
-    title: "Portal / Platform (Enterprise)",
+    title: "Portal Berita / Media (Ultimate)",
     icon: "📡",
-    price: "Rp 10.000.000+ / diskusi kustom",
-    description: "Portal berita besar, platform komunitas, sistem multi-tenant, dll.",
+    price: "Rp 7.500.000 / proyek",
+    description: "Portal berita lokal/nasional, media online, majalah digital, dll.",
     features: [
-      "Arsitektur Multi-modul Terintegrasi",
-      "Sistem Subscription & Membership User",
-      "ETL / Mekanisme Migrasi Data Lama",
-      "Arsitektur Skalabel + Dokumentasi Penuh",
-      "Support & SLA (Service Level Agreement) disepakati bersama",
+      "CMS Artikel berskala besar & kategori dinamis",
+      "Manajemen Penulis / Jurnalis (Role-based)",
+      "Sistem Komentar & Integrasi Sosial Media",
+      "Slot Iklan / AdSense Management",
+      "Optimasi SEO Berita (Google News Ready)",
     ],
-    duration: "⏱ Estimasi per milestone proyek",
-    notes: "DP di awal, pembayaran termin per milestone. Cakupan scope dikunci ketat sebelum deal.",
-    tier: "Tier 4 — Enterprise · Custom Scope",
+    duration: "⏱ 21–30 hari kerja",
+    notes: null,
+    tier: "Tier 3 — Ultimate",
     category: "Portal / Enterprise",
   },
   {
-    title: "ERP / LMS (Enterprise)",
-    icon: "📊",
+    title: "Sistem Kustom Kompleks (Enterprise)",
+    icon: "👑",
     price: "Rp 15.000.000+ / diskusi kustom",
-    description: "Sistem ERP perusahaan, LMS sekolah/kampus, platform e-learning korporat, dll.",
+    description: "Sistem ERP perusahaan, LMS sekolah/kampus, e-learning korporat, dll.",
     features: [
       "Modul HR / akademik / operasional Kustom",
       "Sistem Reporting & Advanced Analytics",
-      "Integrasi dengan Sistem / Infrastruktur yang sudah ada",
+      "Integrasi dengan Sistem / Infrastruktur lama",
       "Arsitektur Skalabel Kinerja Tinggi",
-      "Scope wajib didefinisikan secara sangat detail di awal",
+      "Garansi & Maintenance (SLA)",
     ],
-    duration: "⏱ 2–6 bulan (Tergantung jumlah modul)",
-    notes: "Harga bisa naik signifikan tergantung kebutuhan modul. Wajib konsultasi teknis dulu sebelum angka final ditentukan.",
+    duration: "⏱ 2–6 bulan",
+    notes: "Harga naik/turun drastis tergantung kerumitan modul. Wajib diskusi awal.",
     tier: "Tier 4 — Enterprise · Custom Scope",
     category: "Portal / Enterprise",
   },
@@ -207,9 +209,22 @@ export default function Services() {
       whileInView={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       viewport={{ once: true, margin: "-100px" }}
-      className="py-20 md:py-28 bg-[#111118] relative"
+      className="py-20 md:py-28 bg-[#111118] relative overflow-hidden"
     >
       <div className="absolute top-20 left-0 w-72 h-72 bg-accent/[0.03] rounded-full blur-[100px]" />
+
+      {/* Grid Pattern Background (Dipindah dari Skills) */}
+      <div className="absolute inset-0 z-0">
+        <GridPattern
+          width={40}
+          height={40}
+          x={-1}
+          y={-1}
+          strokeDasharray={"4 2"}
+          className="opacity-40"
+          style={{ stroke: "rgba(144, 19, 254, 0.15)" }}
+        />
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
         {/* Section Title */}
@@ -269,7 +284,10 @@ export default function Services() {
                   isGrowthPopular ? "border-accent/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]" : ""
                 }`}
               >
-                <div>
+                {/* Border Beam for Most Popular items */}
+                {isGrowthPopular && <BorderBeam duration={8} size={150} borderWidth={1.5} />}
+                
+                <div className="relative z-10">
                   <div className="flex items-center justify-between mb-5">
                     {/* Icon */}
                     <div className="w-14 h-14 bg-accent/10 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-accent/20 transition-colors duration-300">
@@ -314,7 +332,7 @@ export default function Services() {
                 </div>
 
                 {/* Bottom Metadata (Duration & Notes) */}
-                <div>
+                <div className="relative z-10">
                   {service.duration && (
                     <div className="flex items-center gap-2 text-[11px] text-accent/80 font-medium pt-3 border-t border-surface-border/20">
                       <Clock className="w-4 h-4 text-accent" />

@@ -1,21 +1,41 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-accent: #8B5CF6;
-  --color-accent-dark: #6D28D9;
-  --color-accent-light: #A78BFA;
+  /* === DARK COSMIC COLOR TOKENS === */
+  --color-primary: #9013FE;
+  --color-primary-dim: rgba(144, 19, 254, 0.15);
+  --color-primary-border: rgba(144, 19, 254, 0.35);
+  --color-pink-accent: #D4537E;
+  --color-teal-accent: #1D9E75;
+
+  /* Backward compat — accent alias for existing Tailwind classes (admin/blog/karya pages) */
+  --color-accent: #9013FE;
+  --color-accent-dark: #6B0DBF;
+  --color-accent-light: #B55CFB;
+
+  /* Section backgrounds */
+  --color-bg-hero: #060612;
+  --color-bg-about: #0c0c18;
+  --color-bg-skills: #080810;
+  --color-bg-experience: #0e0a1a;
+  --color-bg-portfolio: #07070f;
+  --color-bg-contact: #0a0518;
+
+  /* Surface colors */
   --color-surface: #111111;
   --color-surface-card: #1A1A1A;
   --color-surface-border: #2A2A2A;
   --color-surface-hover: #222222;
-  --color-background: #0A0A0A;
+  --color-background: #060612;
   --color-foreground: #EDEDED;
   --color-muted: #888888;
   --color-muted-light: #AAAAAA;
 
+  /* Fonts */
   --font-sans: var(--font-dm-sans), sans-serif;
   --font-display: var(--font-syne), sans-serif;
 
+  /* Animations */
   --animate-fade-up: fadeUp 0.6s ease forwards;
   --animate-skill-fill: skillFill 1.2s ease forwards;
   --animate-float: float 6s ease-in-out infinite;
@@ -57,10 +77,10 @@
 
 @keyframes pulseGlow {
   0%, 100% {
-    box-shadow: 0 0 5px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 5px rgba(144, 19, 254, 0.3);
   }
   50% {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+    box-shadow: 0 0 20px rgba(144, 19, 254, 0.6);
   }
 }
 
@@ -95,9 +115,90 @@
   }
 }
 
+/* Star twinkle */
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Dot pulse (available badge) */
+@keyframes dotPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.5);
+  }
+}
+
+/* Timeline dot glow pulse */
+@keyframes timelineDotPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(144, 19, 254, 0.2), 0 0 16px rgba(144, 19, 254, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(144, 19, 254, 0.3), 0 0 24px rgba(144, 19, 254, 0.7);
+  }
+}
+
+/* Submit button glow */
+@keyframes submitGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(144, 19, 254, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(144, 19, 254, 0.5);
+  }
+}
+
+/* Magic UI: Meteor animation */
+@keyframes meteor {
+  0% {
+    transform: rotate(var(--angle)) translateX(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--angle)) translateX(-500px);
+    opacity: 0;
+  }
+}
+
+.animate-meteor {
+  animation: meteor 5s linear infinite;
+  width: 2px;
+  height: 2px;
+  background: rgba(144, 19, 254, 0.6);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+  color: rgba(144, 19, 254, 0.5);
+}
+
+/* Magic UI: Ripple animation */
+@keyframes ripple {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
+.animate-ripple {
+  animation: ripple var(--duration, 2s) ease calc(var(--i, 0) * 0.2s) infinite;
+}
+
 /* ===== BASE STYLES ===== */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -106,10 +207,11 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 ::selection {
-  background: rgba(139, 92, 246, 0.3);
+  background: rgba(144, 19, 254, 0.3);
   color: #fff;
 }
 
@@ -119,35 +221,40 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0A0A0A;
+  background: #060612;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: #2a2a3a;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8B5CF6;
+  background: #9013FE;
 }
 
 /* ===== UTILITIES ===== */
 .text-gradient {
-  background: linear-gradient(135deg, #8B5CF6, #A78BFA);
-  -webkit-background-clip: text;
+  background: linear-gradient(135deg, #9013FE, #B55CFB);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
+.cosmic-glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
 .glass-card {
-  background: rgba(26, 26, 26, 0.8);
+  background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(42, 42, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .glow-accent {
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.2), 0 0 30px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 15px rgba(144, 19, 254, 0.2), 0 0 30px rgba(144, 19, 254, 0.1);
 }
 
 .line-clamp-2 {
@@ -186,11 +293,11 @@ body {
 
 /* ===== RADIAL GLOW BACKGROUNDS ===== */
 .radial-glow-hero {
-  background: radial-gradient(ellipse at top, rgba(139, 92, 246, 0.08) 0%, transparent 70%), #0a0a0a;
+  background: radial-gradient(ellipse at top, rgba(144, 19, 254, 0.08) 0%, transparent 70%), #060612;
 }
 
 .radial-glow-cta {
-  background: radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.08) 0%, transparent 70%), #111118;
+  background: radial-gradient(ellipse at bottom, rgba(144, 19, 254, 0.08) 0%, transparent 70%), #0a0518;
 }
 
 /* mask for soft fade edges of marquee */
@@ -278,4 +385,3 @@ div[contenteditable]:empty:before {
   color: #ffffff;
   font-weight: 700;
 }
-

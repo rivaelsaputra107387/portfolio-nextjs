@@ -1,12 +1,28 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Zap, Rocket, Briefcase } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import { usePhoto } from "@/components/providers/PhotoProvider";
+import { Meteors } from "@/components/magicui/meteors";
+
+const dynamicCategories = [
+  "Jasa Web Sistem Kustom",
+  "Landing Page Promosi UMKM",
+  "Aplikasi E-Commerce Modern",
+  "Sistem Informasi Organisasi",
+];
 
 export default function Hero() {
   const [profile, setProfile] = useState(null);
   const heroRef = useRef(null);
+  const [currentCategory, setCurrentCategory] = useState(0);
+
+  const isHeroInView = useInView(heroRef, { margin: "-40% 0px 0px 0px" });
+  const { activePhotoSection, setActivePhotoSection } = usePhoto();
+
+  useEffect(() => {
+    if (isHeroInView) setActivePhotoSection("hero");
+  }, [isHeroInView, setActivePhotoSection]);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -23,138 +39,198 @@ export default function Hero() {
     fetchProfile();
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentCategory((prev) => (prev + 1) % dynamicCategories.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleScroll = (e, href) => {
     e.preventDefault();
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Stars removed — replaced by Meteors component
+
   return (
-    <motion.section
+    <section
       id="hero"
       ref={heroRef}
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      viewport={{ once: true, margin: "-100px" }}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden radial-glow-hero"
+      className="relative min-h-[100svh] flex flex-col pt-24 lg:pt-32 pb-0 lg:pb-16 overflow-hidden"
+      style={{ backgroundColor: "#060612" }}
     >
-      {/* Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-accent/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/3 rounded-full blur-[120px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/[0.02] rounded-full blur-[150px]" />
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(139,92,246,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.2) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px",
-          }}
-        />
-      </div>
+      {/* Glow Layers */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 600px 500px at 0% 50%, rgba(144, 19, 254,0.2) 0%, transparent 70%)",
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 400px 400px at 100% 50%, rgba(212,83,126,0.15) 0%, transparent 60%)",
+        }}
+      />
 
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-20 pt-32 md:pt-20 w-full text-center flex flex-col items-center">
-        <div className="w-full flex flex-col items-center">
-          {/* Floating Badges + Headline (Animate immediately) */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="w-full flex flex-col items-center"
-          >
-            {/* Floating Badges */}
-            <div className="flex flex-wrap justify-center gap-3 mb-8">
-              <span
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-accent/10 border border-accent/20 text-accent text-xs font-semibold rounded-full animate-bounce-subtle"
+      {/* Animated Meteors Background */}
+      <Meteors number={15} angle={215} minDuration={3} maxDuration={10} />
+
+      {/* Content Container */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full max-w-[100vw] grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-center flex-1">
+        
+        {/* Left Column (Text & CTA) */}
+        <div className="flex flex-col items-start text-left">
+          
+          {/* Dynamic Category (Typing effect / Fade) */}
+          <div className="h-8 mb-6 flex items-center">
+            <span
+              className="inline-block w-2 h-2 rounded-full mr-3"
+              style={{ background: "#9013FE", boxShadow: "0 0 10px #9013FE" }}
+            />
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={currentCategory}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="text-sm md:text-base font-bold tracking-widest uppercase"
+                style={{ color: "rgba(255,255,255,0.7)" }}
               >
-                <Briefcase className="w-3.5 h-3.5 text-accent" /> 3+ Years Experience
-              </span>
-            </div>
+                {dynamicCategories[currentCategory]}
+              </motion.span>
+            </AnimatePresence>
+          </div>
 
-            {/* Headline Wrapper */}
-            <div className="w-full overflow-hidden">
-              <h1 className="text-3xl md:text-5xl font-display font-extrabold text-white leading-tight mb-6 max-w-3xl mx-auto">
-                Bangun Website yang{" "}
-                <span className="text-gradient">Bukan Cuma Kelihatan Bagus</span>
-                <br />
-                <span className="text-muted-light text-lg md:text-3xl lg:text-4xl font-display font-bold block mt-2">
-                  — Tapi Memberikan Hasil Nyata
-                </span>
-              </h1>
-            </div>
-          </motion.div>
-
-          {/* Subheadline & CTAs (Staggered Delay 0.2s) */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-            className="w-full flex flex-col items-center"
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="font-display text-white mb-6 leading-[1.2] break-words"
+            style={{
+              fontSize: "clamp(2rem, 4vw, 3.25rem)",
+              fontWeight: 800,
+              letterSpacing: "-0.5px",
+            }}
           >
-            {/* Subheadline */}
-            <p className="text-muted-light text-sm md:text-lg leading-relaxed mb-10 max-w-2xl">
-              Saya <span className="text-white font-semibold">{profile?.name ? profile.name.split(" ")[0] : "Rivael"}</span> — {profile?.title || "Fullstack Developer"}{" "}
-              yang siap membantu UMKM, organisasi, dan perusahaan membangun sistem digital yang fungsional, cepat, dan siap menghasilkan leads.
-            </p>
+            Ubah Kerja Manual Jadi{" "}
+            <span
+              style={{
+                backgroundImage: "linear-gradient(to right, #9013FE, #FFD700)",
+                WebkitBackgroundClip: "text",
+                color: "transparent",
+                display: "inline",
+                filter: "drop-shadow(0 0 20px rgba(144, 19, 254, 0.4))",
+                WebkitBoxDecorationBreak: "clone",
+              }}
+            >
+              Sistem Digital yang Terotomatisasi
+            </span>
+          </motion.h1>
 
-            {/* CTAs */}
-            <div className="flex flex-wrap justify-center gap-4 mb-16">
-              <a
-                href="#contact"
-                onClick={(e) => handleScroll(e, "#contact")}
-                className="inline-flex items-center px-6 py-3.5 md:px-8 md:py-4 bg-accent hover:bg-accent-dark text-surface font-extrabold text-sm md:text-base rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:-translate-y-0.5"
-              >
-                Mulai Project Bareng Saya →
-              </a>
-              <a
-                href="#karya"
-                onClick={(e) => handleScroll(e, "#karya")}
-                className="inline-flex items-center px-6 py-3.5 md:px-8 md:py-4 border-2 border-surface-border hover:border-accent/50 text-white font-extrabold text-sm md:text-base rounded-xl transition-all duration-300 hover:bg-accent/5 hover:-translate-y-0.5"
-              >
-                Lihat Karya Saya
-              </a>
-            </div>
-          </motion.div>
-
-          {/* Stats Row (Staggered Delay 0.4s) */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
-            className="w-full flex flex-col items-center"
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-base md:text-xl mb-10 max-w-xl leading-relaxed"
+            style={{ color: "rgba(255,255,255,0.7)" }}
           >
-            {/* Stats Row */}
-            <div className="grid grid-cols-3 gap-2 md:gap-16 border-t border-surface-border/50 pt-8 w-full max-w-3xl">
-              {[
-                { value: "10+", label: "Projects Delivered" },
-                { value: "5+", label: "Happy Clients" },
-                { value: "3+", label: "Years Experience" },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center px-1">
-                  <div className="text-2xl md:text-4xl font-display font-extrabold text-accent">
-                    {stat.value}
-                  </div>
-                  <div className="text-[9px] md:text-xs text-muted uppercase tracking-wider mt-1 leading-snug">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </div>
+            Kami membantu UMKM dan pemilik bisnis membangun aplikasi web kustom sesuai kebutuhan. <strong className="text-white font-bold">Mulai dari integrasi sistem internal, otomatisasi laporan, hingga platform e-commerce dan landing page.</strong> Satu sistem terpadu untuk efisiensi operasional dan peningkatan omset Anda
+          </motion.p>
+
+          {/* 2 Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto"
+          >
+            <a
+              href={`https://wa.me/${(profile?.whatsapp || "6285794946920").replace(/\D/g, "")}?text=${encodeURIComponent("Halo, saya tertarik dengan jasa website profesional Anda.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex justify-center items-center px-8 py-4 text-white font-bold text-sm md:text-base transition-all duration-300"
+              style={{
+                background: "#9013FE",
+                borderRadius: "999px",
+                boxShadow: "0 0 20px rgba(144, 19, 254, 0.4)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#6B0DBF";
+                e.currentTarget.style.boxShadow = "0 0 30px rgba(144, 19, 254, 0.7)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#9013FE";
+                e.currentTarget.style.boxShadow = "0 0 20px rgba(144, 19, 254, 0.4)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              Buat Website Sekarang
+            </a>
+            <a
+              href="#karya"
+              onClick={(e) => handleScroll(e, "#karya")}
+              className="inline-flex justify-center items-center px-8 py-4 text-white font-bold text-sm md:text-base transition-all duration-300"
+              style={{
+                background: "transparent",
+                border: "2px solid #9013FE",
+                borderRadius: "999px",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(144, 19, 254, 0.1)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              Lihat Portofolio
+            </a>
           </motion.div>
         </div>
-      </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-        <span className="text-xs text-muted tracking-widest uppercase">Scroll</span>
-        <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
+        {/* Right Column (Photo) */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, x: 40 }}
+          whileInView={{ opacity: 1, scale: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="relative block w-full mt-12 lg:mt-0"
+        >
+          {/* Decorative Glow Behind Image */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] rounded-full pointer-events-none"
+            style={{
+              background: "radial-gradient(circle, rgba(144, 19, 254,0.15) 0%, transparent 60%)",
+            }}
+          />
+          
+          <div className="relative w-full aspect-[4/5] max-w-[450px] mx-auto lg:ml-auto lg:mr-0 transition-transform duration-500 hover:scale-[1.02]">
+            {activePhotoSection === "hero" && (
+              <motion.img
+                layoutId="shared-profile-photo"
+                src={profile?.hero_image_url || "https://placehold.co/800x1000/0c0c18/9013FE?text=Foto+Profil"}
+                alt="Profil"
+                className="w-full h-full object-contain object-bottom lg:object-right-bottom"
+                style={{ filter: "drop-shadow(0 0 40px rgba(144, 19, 254, 0.4))" }}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+              />
+            )}
+          </div>
+        </motion.div>
+
       </div>
-    </motion.section>
+    </section>
   );
 }

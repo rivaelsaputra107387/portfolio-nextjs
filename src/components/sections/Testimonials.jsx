@@ -41,6 +41,11 @@ export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0); // -1: left, 1: right
   const [isHovered, setIsHovered] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    setImageError(false);
+  }, [currentIndex]);
 
   useEffect(() => {
     async function fetchTestimonials() {
@@ -146,14 +151,14 @@ export default function Testimonials() {
         <div
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="relative max-w-4xl mx-auto mt-12 px-6 py-10 flex flex-col items-center justify-center min-h-[360px]"
+          className="relative max-w-4xl mx-auto mt-6 px-4 py-6 flex flex-col items-center justify-center min-h-[260px]"
         >
           {/* Decorative Giant Quote Mark */}
-          <div className="absolute top-0 left-6 md:left-12 text-accent/[0.06] text-8xl md:text-9xl font-serif select-none pointer-events-none leading-none">
+          <div className="absolute top-2 left-4 md:left-10 text-accent/[0.05] text-7xl md:text-8xl font-serif select-none pointer-events-none leading-none">
             “
           </div>
 
-          <div className="w-full relative overflow-hidden flex items-center justify-center min-h-[160px]">
+          <div className="w-full relative overflow-hidden flex items-center justify-center min-h-[120px]">
             <AnimatePresence initial={false} custom={direction} mode="wait">
               <motion.div
                 key={currentIndex}
@@ -165,29 +170,32 @@ export default function Testimonials() {
                 className="w-full text-center flex flex-col items-center justify-center"
               >
                 {/* Quote Text */}
-                <p className="text-white text-lg md:text-2xl italic leading-relaxed text-center px-4 md:px-8 max-w-[700px] mb-8 font-sans font-medium">
-                  {currentTestimonial.content}
+                <p className="text-white text-base md:text-xl italic leading-relaxed text-center px-4 md:px-6 max-w-[650px] mb-5 font-sans font-medium">
+                  "{currentTestimonial.content}"
                 </p>
 
                 {/* Profile Card */}
-                <div className="flex flex-col items-center">
-                  <div className="w-14 h-14 bg-accent/10 border border-accent/25 rounded-full flex items-center justify-center text-accent font-extrabold text-lg mb-3 shadow-[0_0_15px_rgba(139,92,246,0.15)] overflow-hidden">
-                    {currentTestimonial.avatar_url ? (
+                <div className="flex items-center gap-3 text-left">
+                  <div className="w-11 h-11 bg-accent/10 border border-accent/25 rounded-full flex items-center justify-center text-accent font-extrabold text-base shadow-[0_0_12px_rgba(139,92,246,0.15)] overflow-hidden flex-shrink-0">
+                    {currentTestimonial.avatar_url && !imageError ? (
                       <img
                         src={currentTestimonial.avatar_url}
                         alt={currentTestimonial.name}
                         className="w-full h-full object-cover"
+                        onError={() => setImageError(true)}
                       />
                     ) : (
-                      <span>{currentTestimonial.name.charAt(0)}</span>
+                      <span>{currentTestimonial.name ? currentTestimonial.name.charAt(0) : "T"}</span>
                     )}
                   </div>
-                  <h4 className="text-white font-bold text-base md:text-lg tracking-tight">
-                    {currentTestimonial.name}
-                  </h4>
-                  <p className="text-accent text-xs md:text-sm font-semibold mt-1">
-                    {currentTestimonial.role || currentTestimonial.title}
-                  </p>
+                  <div>
+                    <h4 className="text-white font-bold text-sm md:text-base tracking-tight">
+                      {currentTestimonial.name}
+                    </h4>
+                    <p className="text-accent text-xs font-semibold mt-0.5">
+                      {currentTestimonial.role || currentTestimonial.title}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             </AnimatePresence>

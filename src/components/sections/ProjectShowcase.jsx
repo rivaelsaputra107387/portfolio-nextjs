@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import SectionTitle from "@/components/ui/SectionTitle";
-import ProjectCard from "@/components/ui/ProjectCard";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import ProjectCard from "../ui/ProjectCard";
+import { Meteors } from "@/components/magicui/meteors";
 
 const fallbackProjects = [
   {
@@ -58,6 +58,8 @@ const fallbackProjects = [
   },
 ];
 
+
+
 export default function ProjectShowcase() {
   const [projects, setProjects] = useState(fallbackProjects);
   const [activeFilter, setActiveFilter] = useState("Semua");
@@ -85,81 +87,136 @@ export default function ProjectShowcase() {
   const filtered = activeFilter === "Semua" ? projects : projects.filter((p) => p.category === activeFilter);
 
   return (
-    <motion.section
+    <section
       id="karya"
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      viewport={{ once: true, margin: "-100px" }}
-      className="py-20 md:py-28 relative"
+      className="relative py-24 md:py-32 overflow-hidden"
+      style={{ backgroundColor: "#07070f" }}
     >
-      <div className="absolute bottom-20 right-0 w-80 h-80 bg-accent/[0.03] rounded-full blur-[100px]" />
+      {/* Pink glow top */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 700px 300px at 50% 0%, rgba(212,83,126,0.15) 0%, transparent 60%)",
+        }}
+      />
+      
+      {/* Slow Meteors Background */}
+      <Meteors number={8} angle={190} minDuration={5} maxDuration={15} />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
+        {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
         >
-          <SectionTitle
-            subtitle="Portfolio"
-            title="Karya Terbaru"
-            description="Beberapa proyek yang sudah saya kerjakan untuk berbagai klien dan organisasi."
-          />
+          <span
+            className="inline-block text-xs font-semibold uppercase mb-4"
+            style={{ color: "#9013FE", letterSpacing: "3px" }}
+          >
+            ● PORTFOLIO
+          </span>
+          <h2
+            className="font-display text-white mb-4"
+            style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", fontWeight: 700 }}
+          >
+            Karya Terbaru
+          </h2>
+          <p style={{ color: "rgba(255,255,255,0.5)" }} className="max-w-2xl mx-auto">
+            Beberapa proyek yang sudah saya kerjakan untuk berbagai klien dan organisasi.
+          </p>
         </motion.div>
 
-        {/* Category Filter */}
+        {/* Filter Tabs */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-          className="flex overflow-x-auto whitespace-nowrap md:flex-wrap md:justify-center gap-2 pb-3 mb-10 scrollbar-none"
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="flex justify-center mb-10"
         >
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              suppressHydrationWarning
-              onClick={() => setActiveFilter(cat)}
-              className={`px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300 flex-shrink-0 ${
-                activeFilter === cat
-                  ? "bg-accent text-surface shadow-[0_0_15px_rgba(139,92,246,0.3)]"
-                  : "bg-surface-card border border-surface-border text-muted hover:text-white hover:border-accent/30"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+          <div
+            className="inline-flex items-center gap-1 p-1 overflow-x-auto"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: "999px",
+            }}
+          >
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                suppressHydrationWarning
+                onClick={() => setActiveFilter(cat)}
+                className="relative px-4 py-2 text-sm font-medium transition-all duration-300 flex-shrink-0"
+                style={{
+                  borderRadius: "999px",
+                  color: activeFilter === cat ? "#fff" : "rgba(255,255,255,0.5)",
+                  background: "transparent",
+                  zIndex: 1,
+                }}
+              >
+                {activeFilter === cat && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0"
+                    style={{
+                      background: "#9013FE",
+                      borderRadius: "999px",
+                    }}
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                  />
+                )}
+                <span className="relative z-10">{cat}</span>
+              </button>
+            ))}
+          </div>
         </motion.div>
 
         {/* Project Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((project, i) => (
-            <motion.div
-              key={project.id || i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 + i * 0.1 }}
-              className={i >= 3 ? "hidden md:block" : ""}
-            >
-              <ProjectCard project={project} />
-            </motion.div>
-          ))}
+          <AnimatePresence mode="popLayout">
+            {filtered.map((project, i) => (
+              <motion.div
+                key={project.id || project.slug || i}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                layout
+              >
+                <ProjectCard project={project} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
 
         {/* View All Link */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
           className="text-center mt-10"
         >
           <a
             href="/karya"
-            className="inline-flex items-center gap-2 px-6 py-3 border-2 border-surface-border hover:border-accent/50 text-white font-semibold rounded-xl transition-all duration-300 hover:bg-accent/5"
+            className="inline-flex items-center gap-2 px-6 py-3 text-white font-semibold text-sm transition-all duration-300"
+            style={{
+              border: "1px solid rgba(144, 19, 254,0.3)",
+              borderRadius: "999px",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "rgba(144, 19, 254,0.6)";
+              e.currentTarget.style.background = "rgba(144, 19, 254,0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(144, 19, 254,0.3)";
+              e.currentTarget.style.background = "transparent";
+            }}
           >
             Lihat Semua Karya
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,6 +225,6 @@ export default function ProjectShowcase() {
           </a>
         </motion.div>
       </div>
-    </motion.section>
+    </section>
   );
 }

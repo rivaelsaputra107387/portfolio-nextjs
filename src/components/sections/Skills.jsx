@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import SectionTitle from "@/components/ui/SectionTitle";
 import { Globe, Database, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import { GridPattern } from "@/components/magicui/grid-pattern";
+import { MagicCard } from "@/components/magicui/magic-card";
 
 const fallbackSkills = [
   // Modern Web Development
@@ -37,16 +38,19 @@ const fallbackSkills = [
 
 const categoriesConfig = {
   "Modern Web Development": {
-    icon: <Globe className="w-6 h-6 text-accent" />,
-    description: "Membangun antarmuka web yang cepat, interaktif, responsif, dan ramah SEO — dari landing page hingga sistem multi-halaman."
+    icon: <Globe className="w-6 h-6" style={{ color: "#9013FE" }} />,
+    description: "Membangun antarmuka web yang cepat, interaktif, responsif, dan ramah SEO — dari landing page hingga sistem multi-halaman.",
+    badgeColor: { bg: "rgba(144, 19, 254,0.12)", border: "rgba(144, 19, 254,0.35)" },
   },
   "Database & System Architecture": {
-    icon: <Database className="w-6 h-6 text-accent" />,
-    description: "Merancang struktur penyimpanan data yang aman, terstruktur, dan skalabel untuk sistem kustom skala UMKM hingga enterprise."
+    icon: <Database className="w-6 h-6" style={{ color: "#9013FE" }} />,
+    description: "Merancang struktur penyimpanan data yang aman, terstruktur, dan skalabel untuk sistem kustom skala UMKM hingga enterprise.",
+    badgeColor: { bg: "rgba(29,158,117,0.12)", border: "rgba(29,158,117,0.35)" },
   },
   "Automation & AI Integration": {
-    icon: <Zap className="w-6 h-6 text-accent" />,
-    description: "Mengotomatisasi alur kerja bisnis dan mengintegrasikan kecerdasan buatan — dari notifikasi otomatis hingga pemrosesan dokumen berbasis AI."
+    icon: <Zap className="w-6 h-6" style={{ color: "#9013FE" }} />,
+    description: "Mengotomatisasi alur kerja bisnis dan mengintegrasikan kecerdasan buatan — dari notifikasi otomatis hingga pemrosesan dokumen berbasis AI.",
+    badgeColor: { bg: "rgba(212,83,126,0.12)", border: "rgba(212,83,126,0.35)" },
   }
 };
 
@@ -103,88 +107,156 @@ export default function Skills() {
     }
   });
 
-  return (
-    <motion.section
-      id="skills"
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      viewport={{ once: true, margin: "-100px" }}
-      className="py-20 md:py-28 bg-[#0a0a0a] relative"
-    >
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent/[0.03] rounded-full blur-[100px]" />
+  // Flatten all skills for badge row
+  const allBadges = Object.entries(categoriesConfig).flatMap(([catName, config]) => {
+    const list = groupedSkills[catName] || [];
+    const sorted = [...list].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+    return sorted.map((skill) => ({
+      ...skill,
+      badgeColor: config.badgeColor,
+    }));
+  });
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
+  return (
+    <section
+      id="skills"
+      className="relative py-24 md:py-32 overflow-hidden"
+      style={{ backgroundColor: "#080810" }}
+    >
+      {/* Teal glow bottom-right */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 500px 400px at 100% 100%, rgba(29,158,117,0.18) 0%, transparent 60%)",
+        }}
+      />
+
+      {/* Grid Pattern Background */}
+      <div className="absolute inset-0 z-0">
+        <GridPattern
+          width={40}
+          height={40}
+          squares={[
+            [4, 4],
+            [5, 1],
+            [8, 2],
+            [12, 5],
+            [2, 7],
+            [15, 3],
+          ]}
+        />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
+        {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-14"
         >
-          <SectionTitle
-            subtitle="Keahlian"
-            title="Tech Stack & Skills"
-            description="Keahlian teknis yang terfokus pada pemberian nilai tambah bisnis secara nyata dan efisien."
-          />
+          <span
+            className="inline-block text-xs font-semibold uppercase mb-4"
+            style={{ color: "#9013FE", letterSpacing: "3px" }}
+          >
+            ● KEAHLIAN
+          </span>
+          <h2
+            className="font-display text-white mb-4"
+            style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", fontWeight: 700 }}
+          >
+            Tech Stack & Skills
+          </h2>
+          <p style={{ color: "rgba(255,255,255,0.5)" }} className="max-w-2xl mx-auto">
+            Keahlian teknis yang terfokus pada pemberian nilai tambah bisnis secara nyata dan efisien.
+          </p>
         </motion.div>
 
-        <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-        >
-          {Object.entries(categoriesConfig).map(([catName, config]) => {
+        {/* Row 1 — 3 Category Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          {Object.entries(categoriesConfig).map(([catName, config], index) => {
             const list = groupedSkills[catName] || [];
-            // Sort by display_order if present
-            const sortedList = [...list].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
 
             return (
-              <div
+              <MagicCard
                 key={catName}
-                className="glass-card p-8 rounded-3xl border border-surface-border/50 hover:border-accent/40 transition-all duration-500 hover:shadow-[0_15px_30px_-10px_rgba(139,92,246,0.12)] relative group overflow-hidden flex flex-col h-full"
+                gradientColor="rgba(144, 19, 254, 0.15)"
+                className="p-7"
               >
-                {/* Decorative glow */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-accent/[0.02] rounded-full blur-2xl group-hover:bg-accent/[0.06] transition-all duration-500" />
-
-                {/* Header */}
-                <div className="flex items-center gap-4 mb-5">
-                  <div className="w-12 h-12 rounded-xl bg-accent/[0.02] flex items-center justify-center border border-accent/20 shadow-[inset_0_0_12px_rgba(139,92,246,0.15)] group-hover:border-accent/40 group-hover:scale-110 transition-all duration-500">
-                    {config.icon}
-                  </div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-accent transition-colors duration-300">
-                    {catName}
-                  </h3>
+                {/* Icon Box */}
+                <div
+                  className="w-12 h-12 flex items-center justify-center mb-5"
+                  style={{
+                    background: "rgba(144, 19, 254,0.15)",
+                    border: "1px solid rgba(144, 19, 254,0.3)",
+                    borderRadius: "12px",
+                  }}
+                >
+                  {config.icon}
                 </div>
 
+                {/* Title */}
+                <h3
+                  className="text-lg font-bold text-white mb-2"
+                >
+                  {catName}
+                </h3>
+
                 {/* Description */}
-                <p className="text-muted text-sm leading-relaxed mb-6 flex-grow">
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: "rgba(255,255,255,0.5)" }}
+                >
                   {config.description}
                 </p>
 
-                <div className="w-full h-px bg-surface-border/60 mb-6" />
-
-                {/* Skill Badges */}
-                <div className="flex flex-wrap gap-2">
-                  {sortedList.map((skill) => (
-                    <div
-                      key={skill.name}
-                      className="group/pill flex items-center px-2 py-0.5 bg-surface/40 hover:bg-surface-card/60 border border-surface-border/80 hover:border-accent/30 rounded-xl text-white/90 hover:text-white text-xs font-medium transition-all duration-300 hover:-translate-y-0.5 shadow-sm"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-accent/70 group-hover/pill:bg-accent mr-2 transition-colors duration-300" />
-                      {skill.name}
-                    </div>
-                  ))}
-                  {sortedList.length === 0 && (
-                    <span className="text-xs text-muted/65 italic">Belum ada skill ditambahkan</span>
-                  )}
+                {/* Count */}
+                <div className="mt-4 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+                  <span className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+                    {list.length} teknologi
+                  </span>
                 </div>
-              </div>
+              </MagicCard>
             );
           })}
+        </div>
+
+        {/* Row 2 — All Tech Badges */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="flex flex-wrap justify-center gap-2"
+        >
+          {allBadges.map((badge, i) => (
+            <motion.span
+              key={badge.name}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.4 + i * 0.03 }}
+              whileHover={{ scale: 1.05 }}
+              className="px-3.5 py-2 text-xs font-medium cursor-default transition-colors duration-300"
+              style={{
+                background: badge.badgeColor.bg,
+                border: `1px solid ${badge.badgeColor.border}`,
+                borderRadius: "8px",
+                color: "rgba(255,255,255,0.8)",
+              }}
+            >
+              {badge.name}
+            </motion.span>
+          ))}
+          {allBadges.length === 0 && (
+            <span className="text-xs italic" style={{ color: "rgba(255,255,255,0.4)" }}>
+              Belum ada skill ditambahkan
+            </span>
+          )}
         </motion.div>
       </div>
-    </motion.section>
+    </section>
   );
 }
