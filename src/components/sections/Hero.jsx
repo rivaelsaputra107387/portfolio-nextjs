@@ -58,7 +58,7 @@ export default function Hero() {
     <section
       id="hero"
       ref={heroRef}
-      className="relative min-h-[100svh] flex flex-col pt-24 lg:pt-32 pb-0 lg:pb-16 overflow-hidden"
+      className="relative min-h-[100svh] flex flex-col pt-20 sm:pt-24 lg:pt-32 pb-10 lg:pb-16 overflow-hidden"
       style={{ backgroundColor: "#060612" }}
     >
       {/* Glow Layers */}
@@ -81,10 +81,10 @@ export default function Hero() {
       <Meteors number={15} angle={215} minDuration={3} maxDuration={10} />
 
       {/* Content Container */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full max-w-[100vw] grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-center flex-1">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full max-w-[100vw] grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-center flex-1">
         
         {/* Left Column (Text & CTA) */}
-        <div className="flex flex-col items-start text-left">
+        <div className="order-2 lg:order-1 flex flex-col items-start text-left">
           
           {/* Dynamic Category (Typing effect / Fade) */}
           <div className="h-8 mb-6 flex items-center">
@@ -206,7 +206,7 @@ export default function Hero() {
           whileInView={{ opacity: 1, scale: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative block w-full mt-12 lg:mt-0"
+          className="relative order-1 lg:order-2 block w-full mt-2 lg:mt-0"
         >
           {/* Decorative Glow Behind Image */}
           <div
@@ -215,14 +215,34 @@ export default function Hero() {
               background: "radial-gradient(circle, rgba(144, 19, 254,0.15) 0%, transparent 60%)",
             }}
           />
-          
-          <div className="relative w-full aspect-[4/5] max-w-[450px] mx-auto lg:ml-auto lg:mr-0 transition-transform duration-500 hover:scale-[1.02]">
+
+          <div className="relative w-full aspect-[3/4] sm:aspect-[4/5] max-w-[320px] sm:max-w-[380px] md:max-w-[420px] mx-auto lg:ml-auto lg:mr-0 transition-transform duration-500 hover:scale-[1.02]">
+            <div
+              className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold"
+              style={{
+                background: "rgba(29,158,117,0.15)",
+                border: "1px solid rgba(29,158,117,0.35)",
+                borderRadius: "999px",
+                color: "#1D9E75",
+                backdropFilter: "blur(10px)",
+              }}
+            >
+              <span
+                className="w-2 h-2 rounded-full"
+                style={{
+                  background: "#1D9E75",
+                  animation: "dotPulse 2s ease-in-out infinite",
+                }}
+              />
+              Available for Work
+            </div>
+
             {activePhotoSection === "hero" && (
               <motion.img
                 layoutId="shared-profile-photo"
                 src={profile?.hero_image_url || "https://placehold.co/800x1000/0c0c18/9013FE?text=Foto+Profil"}
                 alt="Profil"
-                className="w-full h-full object-contain object-bottom lg:object-right-bottom"
+                className="w-full h-full object-contain object-center lg:object-right-bottom"
                 style={{ filter: "drop-shadow(0 0 40px rgba(144, 19, 254, 0.4))" }}
                 transition={{ type: "spring", stiffness: 100, damping: 20 }}
               />
